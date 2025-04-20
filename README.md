@@ -4,7 +4,7 @@ This project implements a few problem solving concepts using C++ to create summa
 
 Summarizer can be approached in two ways:
 <ol>
-    <li><b>Extractive Summarization<b>: Select key sentences from text (what this project will do since we're using C++)</li>
+    <li><b>Extractive Summarization</b>: Select key sentences from text (what this project will do since we're using C++)</li>
     <li><b>Abstractive summarization</b>: Stuff that GPT can do better</li>
 </ol>
 
