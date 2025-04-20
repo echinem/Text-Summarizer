@@ -1,5 +1,5 @@
 # Text-Summarizer
----
+
 This project implements a few problem solving concepts using C++ to create summary from an input text which can be extracted from a .txt file or entered manually. 
 
 Summarizer can be approached in two ways:
@@ -9,7 +9,7 @@ Summarizer can be approached in two ways:
 </ol>
 
 # Implementation Roadmap
----
+
 <ol>
     <li>Input text & parsing</li>
     <li>Tokenize & clean the text</li>
@@ -19,7 +19,7 @@ Summarizer can be approached in two ways:
 </ol>
 
 # Algorithms
----
+
 <ol>
     <li><b>Tokenization</b>: Splitting text into words/sentences</li>
     <li><b>Frequency-based scoring</b>: Using word counts to rank sentences</li>
