@@ -5,6 +5,7 @@
 #include <sstream>
 #include <set>
 #include <map>
+#include <algorithm>
 using namespace std;
 
 /*
@@ -128,6 +129,27 @@ vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tSents, c
     return scores;
 }
 
+vector<string> getSummary(const vector<pair<int, double>> &scores, const vector<string> &sents, double top){
+    vector<pair<int,double>> sorted = scores;
+    sort(sorted.begin(), sorted.end(), [](const pair<int, double> &a, const pair<int, double> &b){
+        return a.second > b.second;
+    });
+
+    int topCount = sorted.size()*top;
+    vector<int> selected;
+    for(int i=0; i<topCount; i++){
+        selected.push_back(sorted[i].first);
+    }
+
+    sort(selected.begin(), selected.end());
+
+    vector<string> summary;
+    for(int idx: selected){
+        summary.push_back(sents[idx]);
+    }
+    return summary;
+}
+
 void processText(string text)
 {
     vector<string> sentences;
@@ -138,6 +160,13 @@ void processText(string text)
     map<string, int> freq = frequency(tokens);
 
     vector<pair<int, double>> scores = scoreSentences(tokenized, freq);
+
+    vector<string> summary = getSummary(scores, sentences, 0.3);
+
+    cout << "\nSummary: \n";
+    for(const string &sentence: summary){
+        cout << sentence << endl;
+    }
 }
 
 string fileText(string f)
@@ -202,8 +231,6 @@ int main()
              << endl
              << text << endl
              << endl;
-
-        // function call to further: processText(text);
 
         /*
         To find summary of another text
