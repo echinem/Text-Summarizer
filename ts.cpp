@@ -6,6 +6,7 @@
 #include <set>
 #include <map>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 /*
@@ -135,7 +136,7 @@ vector<string> getSummary(const vector<pair<int, double>> &scores, const vector<
         return a.second > b.second;
     });
 
-    int topCount = sorted.size()*top;
+    int topCount = ceil(sorted.size()*top);
     vector<int> selected;
     for(int i=0; i<topCount; i++){
         selected.push_back(sorted[i].first);
