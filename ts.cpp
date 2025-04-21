@@ -27,33 +27,6 @@ using namespace std;
 
 set<string> stopwords = {"the", "is", "a", "an", "at", "to", "of", "and", "on"};
 
-map<string, int> frequency(const vector<string> &tokens)
-{
-    map<string, int> count;
-
-    for (const string &word : tokens)
-    {
-        count[word]++;
-    }
-    return count;
-}
-
-vector<string> tokenizeAndFilter(const string &s)
-{
-    vector<string> tokens;
-    string word;
-    stringstream ss(s);
-
-    while (ss >> word)
-    {
-        if (stopwords.find(word) == stopwords.end())
-        {
-            tokens.push_back(word);
-        }
-    }
-    return tokens;
-}
-
 vector<string> splitToSentences(string text)
 {
     // split a para into individual sentences (each ending with a '.')
@@ -86,8 +59,23 @@ string cleanNormalizeText(string sentence)
     return clean;
 }
 
-// enter function to parse text
-vector<string> parseText(string text, vector<string> &sentences)
+vector<string> tokenizeAndFilter(const string &s)
+{
+    vector<string> tokens;
+    string word;
+    stringstream ss(s);
+
+    while (ss >> word)
+    {
+        if (stopwords.find(word) == stopwords.end())
+        {
+            tokens.push_back(word);
+        }
+    }
+    return tokens;
+}
+
+vector<string> parseText(string text, vector<string> &sentences, vector<vector<string>> &tokenized)
 {
     // split but append period
     // clean: lower, remove punctuation, tokenize
@@ -102,10 +90,54 @@ vector<string> parseText(string text, vector<string> &sentences)
     {
         s = cleanNormalizeText(s); // returns clean lower case text
         vector<string> words = tokenizeAndFilter(s);
+        tokenized.push_back(words);
         tokens.insert(tokens.end(), words.begin(), words.end()); // filters out stopwords and return token words
     }
-
     return tokens;
+}
+
+map<string, int> frequency(const vector<string> &tokens)
+{
+    map<string, int> count;
+
+    for (const string &word : tokens)
+    {
+        count[word]++;
+    }
+    return count;
+}
+
+vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tSents, const map<string, int> &freq)
+{
+    // tSents => tokenized sentences
+    vector<pair<int, double>> scores;
+
+    for (int i = 0; i < tSents.size(); i++)
+    {
+        double score = 0;
+        for (const auto &word : tSents[i])
+        {
+            auto it = freq.find(word);
+            if (it != freq.end())
+            {
+                score += it->second;
+            }
+        }
+        scores.push_back({i, score});
+    }
+    return scores;
+}
+
+void processText(string text)
+{
+    vector<string> sentences;
+    vector<vector<string>> tokenized;
+
+    vector<string> tokens = parseText(text, sentences, tokenized);
+
+    map<string, int> freq = frequency(tokens);
+
+    vector<pair<int, double>> scores = scoreSentences(tokenized, freq);
 }
 
 string fileText(string f)
@@ -124,35 +156,6 @@ string fileText(string f)
     }
     file.close();
     return text;
-}
-
-vector<pair<int, double>> scoreSentences(const vector<string> &sents, const map<string, int> &freq)
-{
-    vector<pair<int, double>> scores;
-
-    for (int i = 0; i < sents.size(); i++)
-    {
-        double score = 0;
-        for (const auto &word : tokens)
-        {
-            if (freq.find(word) != freq.end())
-            {
-                score += freq.at(end);
-            }
-        }
-        scores.push_back({i, score});
-    }
-}
-
-void processText(string text)
-{
-    vector<string> sentences;
-
-    vector<string> tokens = parseText(text, sentences);
-
-    map<string, int> freq = frequency(tokens);
-
-    vector<pair<int, double>> scores = scoreSentences(sentences, freq);
 }
 
 int menu()
