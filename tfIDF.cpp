@@ -10,8 +10,18 @@
 
 using namespace std;
 
-const set<string> STOPWORDS = {"the", "is", "a", "an", "at", "to", "of", "and", "on"};
-
+const set<string> STOPWORDS = {
+    "the", "is", "a", "an", "at", "to", "of", "and", "on",
+    "in", "for", "with", "this", "that", "by", "from", "as",
+    "are", "was", "were", "be", "been", "has", "have", "had",
+    "it", "its", "not", "but", "or", "if", "then", "so", "do",
+    "does", "did", "can", "could", "would", "should", "will",
+    "may", "might", "must", "shall", "i", "we", "you", "he",
+    "she", "they", "them", "his", "her", "their", "our", "my",
+    "me", "your", "yours", "ours", "what", "which", "who",
+    "whom", "how", "when", "where", "why", "also", "about",
+    "all", "any", "some", "such", "no", "nor", "than", "too",
+    "very"};
 
 // for parsing text
 vector<string> split(const string &text)
@@ -72,7 +82,6 @@ void parseText(const string &text, vector<string> &sents, vector<vector<string>>
     }
 }
 
-
 // for computing IDF
 map<string, double> computeIDF(const vector<vector<string>> &tokenized)
 {
@@ -118,30 +127,31 @@ vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tokenized
     return scores;
 }
 
-vector<string> getSummary(const vector<pair<int, double>> &scores, const vector<string> &sents, double ratio=0.3){
-    vector<pair<int,double>> sortedScores = scores;
+vector<string> getSummary(const vector<pair<int, double>> &scores, const vector<string> &sents, double ratio = 0.3)
+{
+    vector<pair<int, double>> sortedScores = scores;
 
-    sort(sortedScores.begin(), sortedScores.end(), [](auto &a, auto &b){
-        return a.second > b.second;
-    });
+    sort(sortedScores.begin(), sortedScores.end(), [](auto &a, auto &b)
+         { return a.second > b.second; });
 
-    int top = ceil(sortedScores.size()*ratio);
+    int top = ceil(sortedScores.size() * ratio);
     vector<int> ind;
 
-    for(int i=0; i<top; i++){
+    for (int i = 0; i < top; i++)
+    {
         ind.push_back(sortedScores[i].first);
     }
 
     sort(ind.begin(), ind.end());
 
     vector<string> summary;
-    for(int i: ind){
+    for (int i : ind)
+    {
         summary.push_back(sents[i]);
     }
 
     return summary;
 }
-
 
 // controller function
 void summarizeText(const string &text)
@@ -151,15 +161,15 @@ void summarizeText(const string &text)
 
     parseText(text, sents, tokenized);
     map<string, double> idf = computeIDF(tokenized);
-    vector<pair<int,double>> scores = scoreSentences(tokenized, idf);
+    vector<pair<int, double>> scores = scoreSentences(tokenized, idf);
     vector<string> summary = getSummary(scores, sents);
 
     cout << "\n\n===== S U M M A R Y =====\n\n";
-    for(const string &s: summary){
+    for (const string &s : summary)
+    {
         cout << "=> " << s << '\n';
     }
 }
-
 
 // file handling
 string readFile(const string &filename)
@@ -181,7 +191,6 @@ string readFile(const string &filename)
     return text;
 }
 
-
 // user interaction
 int menu()
 {
@@ -192,7 +201,6 @@ int menu()
     cin >> choice;
     return choice;
 }
-
 
 // main entry point
 int main()
