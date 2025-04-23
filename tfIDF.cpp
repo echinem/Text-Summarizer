@@ -1,11 +1,108 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <vector>
+#include <map>
+#include <set>
 
 using namespace std;
 
-// summarizeText(text)
-// readFile(filename)
+const set<string> STOPWORDS = {"the", "is", "a", "an", "at", "to", "of", "and", "on"};
+
+vector<string> tokenize(const string &text)
+{
+    vector<string> tokens;
+    stringstream ss(text);
+    string word;
+
+    while (ss >> word)
+    {
+        if (STOPWORDS.find(word) == STOPWORDS.end())
+        {
+            // word isn't a stopword
+            tokens.push_back(word);
+        }
+    }
+    return tokens;
+}
+
+string clean(const string &sentence)
+{
+    string clean;
+    for (char ch : sentence)
+    {
+        if (isalpha(ch) || isspace(ch))
+        {
+            clean += tolower(ch);
+        }
+    }
+    return clean;
+}
+
+vector<string> split(const string &text)
+{
+    vector<string> sents;
+    stringstream ss(text);
+    string sentence;
+
+    while (getline(ss, sentence, '.'))
+    {
+        if (!sentence.empty())
+        {
+            sentence += '.';
+            sents.push_back(sentence);
+        }
+    }
+    return sents;
+}
+
+// parseText(text, sentences, tokenized words)
+void parseText(const string &text, vector<string> &sents, vector<vector<string>> &tokenized)
+{
+    sents = split(text);
+
+    for (const string &s : sents)
+    {
+        string cleaned = clean(s);
+        tokenized.push_back(tokenize(cleaned));
+    }
+}
+
+void summarizeText(const string &text)
+{
+    vector<string> sents;
+    vector<vector<string>> tokenized;
+
+    // parseText(text, sents, tokenized);
+    //  map<string, double> idf = computeIDF(tokenized);
+    //  vector<pair<int,double>> scores = scoreSentences(tokenized, idf);
+    //  vector<string> summary = getSummary(scores, sentences);
+
+    cout << "\n\n===== S U M M A R Y =====\n\n";
+    /*for(const string &s: summary){
+        cout << "=> " << s << '\n';
+    }*/
+}
+
+string readFile(const string &filename)
+{
+    ifstream file(filename);
+    string text, line;
+
+    if (!file)
+    {
+        cerr << "\n\tFailed to open file.\n";
+        return "";
+    }
+
+    while (getline(file, line))
+    {
+        text += line + " ";
+    }
+
+    return text;
+}
 
 int menu()
 {
@@ -31,7 +128,7 @@ int main()
             string filename;
             cout << "\n\tEnter path to TXT file: ";
             getline(cin, filename);
-            // text = readFile(filename);
+            text = readFile(filename);
         }
         else if (choice == 2)
         {
