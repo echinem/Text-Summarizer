@@ -117,11 +117,13 @@ vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tokenized
         }
 
         double score = 0.0;
-        for (const auto &[word, freq] : tf)
-        {
-            score += freq * idf.at(word);
+        for (auto it = tf.begin(); it != tf.end(); ++it) {
+            const string& word = it->first;
+            int freq = it->second;
+            if (idf.count(word)) {
+                score += freq * idf.at(word);
+            }
         }
-
         scores.emplace_back(i, score);
     }
     return scores;
