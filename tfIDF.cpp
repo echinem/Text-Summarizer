@@ -5,10 +5,44 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <algorithm>
+#include <cmath>
 
 using namespace std;
 
 const set<string> STOPWORDS = {"the", "is", "a", "an", "at", "to", "of", "and", "on"};
+
+
+// for parsing text
+vector<string> split(const string &text)
+{
+    vector<string> sents;
+    stringstream ss(text);
+    string sentence;
+
+    while (getline(ss, sentence, '.'))
+    {
+        if (!sentence.empty())
+        {
+            sentence += '.';
+            sents.push_back(sentence);
+        }
+    }
+    return sents;
+}
+
+string clean(const string &sentence)
+{
+    string clean;
+    for (char ch : sentence)
+    {
+        if (isalpha(ch) || isspace(ch))
+        {
+            clean += tolower(ch);
+        }
+    }
+    return clean;
+}
 
 vector<string> tokenize(const string &text)
 {
@@ -27,36 +61,6 @@ vector<string> tokenize(const string &text)
     return tokens;
 }
 
-string clean(const string &sentence)
-{
-    string clean;
-    for (char ch : sentence)
-    {
-        if (isalpha(ch) || isspace(ch))
-        {
-            clean += tolower(ch);
-        }
-    }
-    return clean;
-}
-
-vector<string> split(const string &text)
-{
-    vector<string> sents;
-    stringstream ss(text);
-    string sentence;
-
-    while (getline(ss, sentence, '.'))
-    {
-        if (!sentence.empty())
-        {
-            sentence += '.';
-            sents.push_back(sentence);
-        }
-    }
-    return sents;
-}
-
 void parseText(const string &text, vector<string> &sents, vector<vector<string>> &tokenized)
 {
     sents = split(text);
@@ -68,9 +72,29 @@ void parseText(const string &text, vector<string> &sents, vector<vector<string>>
     }
 }
 
-// getSummary
 
-// scoreSentences
+// for computing IDF
+map<string, double> computeIDF(const vector<vector<string>> &tokenized)
+{
+    map<string, int> docFreq;
+    for (const auto &s : tokenized)
+    {
+        set<string> unique(s.begin(), s.end());
+        for (const string &word : unique)
+        {
+            docFreq[word]++;
+        }
+    }
+
+    int total = tokenized.size();
+    map<string, double> idf;
+    for (const auto &entry : docFreq)
+    {
+        idf[entry.first] = log((double)total / entry.second);
+    }
+    return idf;
+}
+
 vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tokenized, const map<string, double> &idf)
 {
     vector<pair<int, double>> scores;
@@ -93,28 +117,33 @@ vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tokenized
     }
     return scores;
 }
-// computeIDF(tokenized)
-map<string, double> computeIDF(const vector<vector<string>> &tokenized)
-{
-    map<string, int> docFreq;
-    for (const auto &s : tokenized)
-    {
-        set<string> unique(s.begin(), s.end());
-        for (const string &word : unique)
-        {
-            docFreq[word]++;
-        }
+
+vector<string> getSummary(const vector<pair<int, double>> &scores, const vector<string> &sents, double ratio=0.3){
+    vector<pair<int,double>> sortedScores = scores;
+
+    sort(sortedScores.begin(), sortedScores.end(), [](auto &a, auto &b){
+        return a.second > b.second;
+    });
+
+    int top = ceil(sortedScores.size()*ratio);
+    vector<int> ind;
+
+    for(int i=0; i<top; i++){
+        ind.push_back(sortedScores[i].first);
     }
 
-    int total = tokenized.size();
-    map<string, double> idf;
-    for (const auto &entry : docFreq)
-    {
-        idf[entry.first] = log((double)total / entry.second);
+    sort(ind.begin(), ind.end());
+
+    vector<string> summary;
+    for(int i: ind){
+        summary.push_back(sents[i]);
     }
-    return idf;
+
+    return summary;
 }
 
+
+// controller function
 void summarizeText(const string &text)
 {
     vector<string> sents;
@@ -122,15 +151,17 @@ void summarizeText(const string &text)
 
     parseText(text, sents, tokenized);
     map<string, double> idf = computeIDF(tokenized);
-    //  vector<pair<int,double>> scores = scoreSentences(tokenized, idf);
-    //  vector<string> summary = getSummary(scores, sentences);
+    vector<pair<int,double>> scores = scoreSentences(tokenized, idf);
+    vector<string> summary = getSummary(scores, sents);
 
     cout << "\n\n===== S U M M A R Y =====\n\n";
-    /*for(const string &s: summary){
+    for(const string &s: summary){
         cout << "=> " << s << '\n';
-    }*/
+    }
 }
 
+
+// file handling
 string readFile(const string &filename)
 {
     ifstream file(filename);
@@ -150,6 +181,8 @@ string readFile(const string &filename)
     return text;
 }
 
+
+// user interaction
 int menu()
 {
     int choice;
@@ -160,6 +193,8 @@ int menu()
     return choice;
 }
 
+
+// main entry point
 int main()
 {
     int choice;
@@ -189,7 +224,7 @@ int main()
 
         cout << "\nOriginal Text: \n"
              << text << endl;
-        // summarizeText(text);
+        summarizeText(text);
     }
 
     cout << "\n\n\n=== EXITING ===\n\n\n";
