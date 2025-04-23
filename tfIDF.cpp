@@ -57,7 +57,6 @@ vector<string> split(const string &text)
     return sents;
 }
 
-// parseText(text, sentences, tokenized words)
 void parseText(const string &text, vector<string> &sents, vector<vector<string>> &tokenized)
 {
     sents = split(text);
@@ -69,12 +68,37 @@ void parseText(const string &text, vector<string> &sents, vector<vector<string>>
     }
 }
 
+// getSummary
+
+// scoreSentences
+
+// computeIDF(tokenized)
+map<string, double> computeIDF(const vector<string> &tokenized)
+{
+    map<string, int> docFreq;
+    for (const auto &s : tokenized)
+    {
+        set<string> unique(s.begin(), s.end());
+        for (const string &word : unique)
+        {
+            docFreq[word]++;
+        }
+    }
+
+    int total = tokenized.size();
+    map<string, double> idf;
+    for(const auto &entry: docFreq){
+        idf[entry.first] = log((double)total / entry.second);
+    }
+    return idf;
+}
+
 void summarizeText(const string &text)
 {
     vector<string> sents;
     vector<vector<string>> tokenized;
 
-    // parseText(text, sents, tokenized);
+    parseText(text, sents, tokenized);
     //  map<string, double> idf = computeIDF(tokenized);
     //  vector<pair<int,double>> scores = scoreSentences(tokenized, idf);
     //  vector<string> summary = getSummary(scores, sentences);

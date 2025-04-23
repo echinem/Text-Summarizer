@@ -7,6 +7,8 @@
 #include <map>
 #include <algorithm>
 #include <cmath>
+// #include <bits/stdc++.h>
+
 using namespace std;
 
 /*
@@ -200,7 +202,6 @@ int menu()
 
 int main()
 {
-    cout << "Initializing my project!";
     int choice;
     string text, next;
     while (choice != 3)
@@ -233,11 +234,6 @@ int main()
              << text << endl
              << endl;
 
-        /*
-        To find summary of another text
-        cout << "\n\n\tPress 3 to EXIT\n\tPress any other key to proceed to MENU";
-        cin >> choice;
-        */
         processText(text);
     }
 
