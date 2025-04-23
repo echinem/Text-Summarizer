@@ -71,9 +71,30 @@ void parseText(const string &text, vector<string> &sents, vector<vector<string>>
 // getSummary
 
 // scoreSentences
+vector<pair<int, double>> scoreSentences(const vector<vector<string>> &tokenized, const map<string, double> &idf)
+{
+    vector<pair<int, double>> scores;
 
+    for (int i = 0; i < tokenized.size(); i++)
+    {
+        map<string, int> tf;
+        for (const string &word : tokenized[i])
+        {
+            tf[word]++;
+        }
+
+        double score = 0.0;
+        for (const auto &[word, freq] : tf)
+        {
+            score += freq * idf.at(word);
+        }
+
+        scores.emplace_back(i, score);
+    }
+    return scores;
+}
 // computeIDF(tokenized)
-map<string, double> computeIDF(const vector<string> &tokenized)
+map<string, double> computeIDF(const vector<vector<string>> &tokenized)
 {
     map<string, int> docFreq;
     for (const auto &s : tokenized)
@@ -87,7 +108,8 @@ map<string, double> computeIDF(const vector<string> &tokenized)
 
     int total = tokenized.size();
     map<string, double> idf;
-    for(const auto &entry: docFreq){
+    for (const auto &entry : docFreq)
+    {
         idf[entry.first] = log((double)total / entry.second);
     }
     return idf;
@@ -99,7 +121,7 @@ void summarizeText(const string &text)
     vector<vector<string>> tokenized;
 
     parseText(text, sents, tokenized);
-    //  map<string, double> idf = computeIDF(tokenized);
+    map<string, double> idf = computeIDF(tokenized);
     //  vector<pair<int,double>> scores = scoreSentences(tokenized, idf);
     //  vector<string> summary = getSummary(scores, sentences);
 
