@@ -7,29 +7,23 @@
 #include <map>
 #include <algorithm>
 #include <cmath>
-// #include <bits/stdc++.h>
 
 using namespace std;
 
-/*
-    [D]1. Split the input text into sentences using the period ('.') delimiter.
+const set<string> STOPWORDS = {
+    "the", "is", "a", "an", "at", "to", "of", "and", "on",
+    "in", "for", "with", "this", "that", "by", "from", "as",
+    "are", "was", "were", "be", "been", "has", "have", "had",
+    "it", "its", "not", "but", "or", "if", "then", "so", "do",
+    "does", "did", "can", "could", "would", "should", "will",
+    "may", "might", "must", "shall", "i", "we", "you", "he",
+    "she", "they", "them", "his", "her", "their", "our", "my",
+    "me", "your", "yours", "ours", "what", "which", "who",
+    "whom", "how", "when", "where", "why", "also", "about",
+    "all", "any", "some", "such", "no", "nor", "than", "too",
+    "very"
+};
 
-    [D]2. Convert each sentence to lowercase and remove punctuation.
-
-    [D] 3. Tokenize sentences into words while filtering out stopwords.
-
-    [D] 4. Count the frequency of each meaningful word using a map.
-
-    [D] 5. Score each sentence based on the total frequency of its words.
-
-    6. Sort sentences by score and select the top 30% for the summary.
-
-    7. Reorder selected sentences to preserve their original sequence.
-
-    8. Display the final summary to the user.
-    */
-
-set<string> stopwords = {"the", "is", "a", "an", "at", "to", "of", "and", "on"};
 
 vector<string> splitToSentences(string text)
 {
@@ -71,7 +65,7 @@ vector<string> tokenizeAndFilter(const string &s)
 
     while (ss >> word)
     {
-        if (stopwords.find(word) == stopwords.end())
+        if (STOPWORDS.find(word) == STOPWORDS.end())
         {
             tokens.push_back(word);
         }
@@ -84,7 +78,6 @@ vector<string> parseText(string text, vector<string> &sentences, vector<vector<s
     // split but append period
     // clean: lower, remove punctuation, tokenize
     // filter stopword
-    //
 
     sentences = splitToSentences(text);
 
